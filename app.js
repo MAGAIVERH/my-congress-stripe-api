@@ -12,7 +12,7 @@ app.use(express.json());
 const PAYMENT_CONFIRMATION_URL = `${process.env.FRONT_END_URL}/payment-confirmation`;
 
 app.post("/create-checkout-session", async (req, res) => {
-  console.log(req.body);
+  console.log(req.body); 
   const items = req.body.products.map((product) => ({
     price_data: {
       currency: "brl",
@@ -34,4 +34,8 @@ app.post("/create-checkout-session", async (req, res) => {
   res.send({ url: session.url });
 });
 
-app.listen(5000, () => console.log("Running on port 5000"));
+if (require.main === module) {
+  app.listen(5000, () => console.log("Running on port 5000"));
+}
+
+module.exports = app;
