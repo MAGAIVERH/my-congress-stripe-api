@@ -35,7 +35,8 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 if (require.main === module) {
-  app.listen(5000, () => console.log("Running on port 5000"));
+  const PORT = process.env.PORT || 5000;  // Para uso local e na Vercel
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 }
 
 module.exports = app;
