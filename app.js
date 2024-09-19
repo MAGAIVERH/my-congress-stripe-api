@@ -8,7 +8,7 @@ const app = express();
 
 const corsOptions = {
   origin: "https://club-clothing-front.vercel.app",
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
 };
 
@@ -16,6 +16,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 const PAYMENT_CONFIRMATION_URL = `${process.env.FRONT_END_URL}/payment-confirmation`;
+
+app.options("/create-checkout-session", cors(corsOptions)); // Lida com o preflight
 
 app.post("/create-checkout-session", async (req, res) => {
   console.log(req.body); 
@@ -41,8 +43,8 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 if (require.main === module) {
-  const PORT = process.env.PORT || 5000;  // Para uso local e na Vercel
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+  const PORT = process.env.PORT || 5000;  
+  app.listen(PORT, () => console.log(`Running on port ${PORT}`));
 }
 
 module.exports = app;
