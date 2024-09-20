@@ -2,46 +2,50 @@ require("dotenv").config();
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_API_KEY);
 const express = require("express");
-const cors = require("cors");
 
 const app = express();
 
-const corsOptions = {
-  origin: "https://club-clothing-front.vercel.app",
-  allowedHeaders: ["Content-Type"],
-};
+const allowCors = (fn) => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', 'https://club-clothing-front.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-app.use(cors(corsOptions));
-app.use(express.json());
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  return await fn(req, res);
+};
 
 const PAYMENT_CONFIRMATION_URL = `${process.env.FRONT_END_URL}/payment-confirmation`;
 
-app.post("/create-checkout-session", async (req, res) => {
-  console.log(req.body); 
-  const items = req.body.products.map((product) => ({
-    price_data: {
-      currency: "brl",
-      product_data: {
-        name: product.name,
+const handler = async (req, res) => {
+  if (req.method === 'POST') {
+    console.log(req.body);
+    const items = req.body.products.map((product) => ({
+      price_data: {
+        currency: "brl",
+        product_data: {
+          name: product.name,
+        },
+        unit_amount: parseInt(`${product.price}00`),
       },
-      unit_amount: parseInt(`${product.price}00`),
-    },
-    quantity: product.quantity,
-  }));
+      quantity: product.quantity,
+    }));
 
-  const session = await stripe.checkout.sessions.create({
-    line_items: items,
-    mode: "payment",
-    success_url: `${PAYMENT_CONFIRMATION_URL}?success=true`,
-    cancel_url: `${PAYMENT_CONFIRMATION_URL}?canceled=true`,
-  });
+    const session = await stripe.checkout.sessions.create({
+      line_items: items,
+      mode: "payment",
+      success_url: `${PAYMENT_CONFIRMATION_URL}?success=true`,
+      cancel_url: `${PAYMENT_CONFIRMATION_URL}?canceled=true`,
+    });
 
-  res.send({ url: session.url });
-});
+    res.send({ url: session.url });
+  } else {
+    res.status(405).end(); // Método não permitido
+  }
+};
 
-if (require.main === module) {
-  const PORT = process.env.PORT || 5000;  
-  app.listen(PORT, () => console.log(`Running on port ${PORT}`));
-}
+module.exports = allowCors(handler);
 
-module.exports = app;
