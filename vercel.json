@@ -1,6 +1,4 @@
-
 {
-  "version": 2,
   "builds": [
     {
       "src": "app.js",
@@ -10,7 +8,7 @@
   "routes": [
     {
       "src": "/create-checkout-session",
-      "methods": ["POST", "OPTIONS"],
+      "methods": ["GET", "POST", "OPTIONS"],
       "dest": "app.js"
     },
     {
@@ -30,4 +28,3 @@
     }
   ]
 }
-
