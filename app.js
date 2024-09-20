@@ -8,10 +8,15 @@ const app = express();
 
 const corsOptions = {
   origin: "https://club-clothing-front.vercel.app",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   allowedHeaders: ["Content-Type"],
 };
 
+// Apply CORS to all routes
 app.use(cors(corsOptions));
+
+// Enable preflight requests for all routes
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 const PAYMENT_CONFIRMATION_URL = `${process.env.FRONT_END_URL}/payment-confirmation`;
