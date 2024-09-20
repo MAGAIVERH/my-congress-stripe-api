@@ -8,7 +8,6 @@ const app = express();
 
 const corsOptions = {
   origin: "https://club-clothing-front.vercel.app",
-  methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
 };
 
